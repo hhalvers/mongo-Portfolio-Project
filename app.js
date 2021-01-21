@@ -7,9 +7,13 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var propertyRouter = require('./routes/propertyRouter');
 var agentRouter = require('./routes/agentRouter');
-const mongoose = require('mongoose');
+var usersRouter = require('./routes/usersRouter');
 
-const url = 'mongodb://localhost:27017/realty';
+const mongoose = require('mongoose');
+const config = require('./config');
+const passport = require('passport'); 
+
+const url = config.mongoUrl;
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
@@ -23,6 +27,15 @@ connect.then(() => console.log('Connected correctly to server'),
 
 var app = express();
 
+app.all('*', (req, res, next) => {
+  if (req.secure) {
+    return next();
+  } else {
+      console.log(`Redirecting to: https://${req.hostname}:${app.get('secPort')}${req.url}`);
+      res.redirect(301, `https://${req.hostname}:${app.get('secPort')}${req.url}`);
+  }
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -33,7 +46,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', indexRouter);
+app.use('/users', usersRouter);
 app.use('/properties', propertyRouter);
 app.use('/agents', agentRouter);
 
