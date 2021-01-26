@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var propertyRouter = require('./routes/propertyRouter');
 var agentRouter = require('./routes/agentRouter');
 var usersRouter = require('./routes/usersRouter');
+var favoriteRouter = require('./routes/favoriteRouter');
 
 const mongoose = require('mongoose');
 const config = require('./config');
@@ -46,13 +47,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(require('express-session')({ secret: config.SESSION_SECRET, resave: true, saveUninitialized: true }));
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+// app.set('view engine', 'ejs');
+
+app.get('/success', (req, res) => res.send("success"));
+app.get('/error', (req, res) => res.send("error logging in"));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/properties', propertyRouter);
 app.use('/agents', agentRouter);
+app.use('/favorites', favoriteRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

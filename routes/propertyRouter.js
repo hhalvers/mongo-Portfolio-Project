@@ -17,7 +17,7 @@ propertyRouter.route('/')
     })
     .catch(err => next(err));
 })
-.post(cors.corsWithOptions, authenticate.verifyUser,(req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next) => {
     Property.create(req.body)
     .then(property => {
         console.log('Property Created ', property);
@@ -27,11 +27,11 @@ propertyRouter.route('/')
     })
     .catch(err => next(err));
 })
-.put(cors.corsWithOptions, authenticate.verifyUser,(req, res) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,(req, res) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /properties');
 })
-.delete(cors.corsWithOptions, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next) => {
     Property.deleteMany()
     .then(response => {
         res.statusCode = 200;
@@ -52,11 +52,11 @@ propertyRouter.route('/:propertyId')
     })
     .catch(err => next(err));
 })
-.post(cors.corsWithOptions, authenticate.verifyUser,(req, res) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /properties/${req.params.propertyId}`);
 })
-.put(cors.corsWithOptions, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Property.findByIdAndUpdate(req.params.propertyId, {
         $set: req.body
     }, { new: true })
@@ -67,7 +67,7 @@ propertyRouter.route('/:propertyId')
     })
     .catch(err => next(err));
 })
-.delete(cors.corsWithOptions, authenticate.verifyUser,(req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next) => {
     Property.findByIdAndDelete(req.params.propertyId)
     .then(response => {
         res.statusCode = 200;

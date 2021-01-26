@@ -1,5 +1,12 @@
 <html>
 <title>This is index.html</title>
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+      body        { padding-top:70px; }
+  </style>
+</head>
 <body>
 <script>
   // This is called with the results from from FB.getLoginStatus().
@@ -77,8 +84,19 @@
   }
   </script>
 
+<div class="container">
+  <div class="jumbotron text-center text-primary">
+      <h1><span class="fa fa-lock"></span> Social Authentication</h1>
+      <p>Login or Register with:</p>
+      <a href="/users/auth/google" class="btn btn-danger"><span class="fa fa-google"></span> SignIn with Google</a>
+  </div>
+</div>
+
 <h1>Index.html</h1>
+
 <p>This is the contents of this file</p>
+
+
 
 <!--
   Below we include the Login Button social plugin. This button uses
@@ -91,6 +109,8 @@
     
     <div id="status">
     </div>
+
+
   </body>
   
 </html>

@@ -17,7 +17,7 @@ agentRouter.route('/')
     })
     .catch(err => next(err));
 })
-.post(cors.corsWithOptions, authenticate.verifyUser,(req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser,  authenticate.verifyAdmin,(req, res, next) => {
     Agent.create(req.body)
     .then(agent => {
         console.log('Agent Created ', agent);
@@ -27,11 +27,11 @@ agentRouter.route('/')
     })
     .catch(err => next(err));
 })
-.put(cors.corsWithOptions, authenticate.verifyUser,(req, res) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,(req, res) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /agents');
 })
-.delete(cors.corsWithOptions, authenticate.verifyUser,(req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next) => {
     Agent.deleteMany()
     .then(response => {
         res.statusCode = 200;
@@ -52,11 +52,11 @@ agentRouter.route('/:agentId')
     })
     .catch(err => next(err));
 })
-.post(cors.corsWithOptions, authenticate.verifyUser,(req, res) => {
+.post(cors.corsWithOptions, authenticate.verifyUser,  authenticate.verifyAdmin,(req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /agents/${req.params.agentId}`);
 })
-.put(cors.corsWithOptions, authenticate.verifyUser,(req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyUser,  authenticate.verifyAdmin,(req, res, next) => {
     Agent.findByIdAndUpdate(req.params.agentId, {
         $set: req.body
     }, { new: true })
@@ -67,7 +67,7 @@ agentRouter.route('/:agentId')
     })
     .catch(err => next(err));
 })
-.delete(cors.corsWithOptions, authenticate.verifyUser,(req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser,  authenticate.verifyAdmin,(req, res, next) => {
     Agent.findByIdAndDelete(req.params.agentId)
     .then(response => {
         res.statusCode = 200;

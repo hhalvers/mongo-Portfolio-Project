@@ -7,7 +7,8 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 const config = require('./config.js');
-
+// const { Strategy } = require('passport-google-oauth20');
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 const FacebookTokenStrategy = require('passport-facebook-token');
 
@@ -58,6 +59,38 @@ exports.verifyAdmin = (req, res, next) => {
     }
 }
 
+passport.use(new GoogleStrategy({
+    clientID: config.GOOGLE_CLIENT_ID,
+    clientSecret: config.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/users/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    //   userProfile=profile;
+    //   return done(null, userProfile);
+    User.findOne({oauthId: profile.id}, (err, user) => {
+        if (err) {
+            return done(err, false);
+        }
+        if (!err && user) {
+            return done(null, user);
+        } else {
+            user = new User({ username: profile.displayName });
+            user.oauthId = profile.id;
+            user.firstname = profile.name.givenName;
+            user.lastname = profile.name.familyName;
+            user.save((err, user) => {
+                if (err) {
+                    return done(err, false);
+                } else {
+                    return done(null, user);
+                }
+            });
+        }
+    });
+  }
+));
+
+
 exports.facebookPassport = passport.use(
     new FacebookTokenStrategy(
         {
@@ -65,8 +98,7 @@ exports.facebookPassport = passport.use(
             clientSecret: config.facebook.clientSecret
         }, 
         (accessToken, refreshToken, profile, done) => {
-            console.log('inside FacebookTokenStrategy');
-            User.findOne({facebookId: profile.id}, (err, user) => {
+            User.findOne({oauthId: profile.id}, (err, user) => {
                 if (err) {
                     return done(err, false);
                 }
@@ -74,7 +106,7 @@ exports.facebookPassport = passport.use(
                     return done(null, user);
                 } else {
                     user = new User({ username: profile.displayName });
-                    user.facebookId = profile.id;
+                    user.oauthId = profile.id;
                     user.firstname = profile.name.givenName;
                     user.lastname = profile.name.familyName;
                     user.save((err, user) => {

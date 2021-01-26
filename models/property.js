@@ -28,10 +28,12 @@ const propertySchema = new Schema({
         required: true
     },
     lat: {
-
+        type: Number,
+        required: true
     },
     lng: {
-
+        type: Number,
+        required: true
     },
     beds: {
         type: String,
